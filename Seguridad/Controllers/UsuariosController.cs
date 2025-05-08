@@ -19,14 +19,14 @@ namespace Seguridad.Controllers
             _context = context;
         }
 
-        //Get: api/usuarios
+        //Get: api/usuarios - Obtener todos los usuarios
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
             return await _context.Usuarios.Include(u => u.Rol).ToListAsync();
         }
 
-        //Get: api/usuarios/5
+        //Get: api/usuarios/5 - Obtener un usuario por ID
         [HttpGet("{id}")]
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
@@ -38,7 +38,7 @@ namespace Seguridad.Controllers
             return usuario;
         }
 
-        //Post: api/usuarios
+        //Post: api/usuarios - Crear un nuevo usuario
         [HttpPost]
         public async Task<ActionResult> CrearUsuario([FromBody] UsuarioCrearDTO dto)
         {
@@ -55,34 +55,24 @@ namespace Seguridad.Controllers
             return Ok(usuario);
         }
 
-        //Put: api/usuarios/5
+        //Put: api/usuarios/5 - Editar un usuario
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuario(int id, Usuario usuario)
+        public async Task<IActionResult> PutUsuario(int id, [FromBody] UsuarioEditarDTO dto)
         {
-            if (id != usuario.Id)
-            {
-                return BadRequest();
-            }
-            _context.Entry(usuario).State = EntityState.Modified;
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if(!_context.Usuarios.Any(e => e.Id == id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null)
+                return NotFound();
+
+            usuario.Nombre = dto.Nombre;
+            usuario.Email = dto.Email;
+            usuario.RolId = dto.RolId;
+
+            await _context.SaveChangesAsync();
+
             return NoContent();
         }
 
-        //Delete: api/usuarios/5
+        //Delete: api/usuarios/5 - Eliminar un usuario
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuario(int id)
         {

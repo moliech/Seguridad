@@ -23,6 +23,7 @@ namespace Seguridad.Controllers
             _configuration = configuration;
         }
 
+        // POST: api/auth/login - Login
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO login)
         {
@@ -34,7 +35,7 @@ namespace Seguridad.Controllers
                 return Unauthorized();
             }
 
-            //Crear Claims
+            //Crear Claims - información del usuario
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, usuario.Nombre),
@@ -42,6 +43,7 @@ namespace Seguridad.Controllers
                 new Claim(ClaimTypes.Role, usuario.Rol.Nombre)
             };
 
+            //Crear Token
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(
@@ -58,7 +60,8 @@ namespace Seguridad.Controllers
             });
         }
 
-    [HttpPost("register")]
+        // POST: api/auth/register - Registro de usuario
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO register)
         {
             var rol = await _context.Roles.FindAsync(register.RolId);
