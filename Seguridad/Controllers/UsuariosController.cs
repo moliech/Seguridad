@@ -20,14 +20,14 @@ namespace Seguridad.Controllers
         }
 
         //Get: api/usuarios - Obtener todos los usuarios
-        [HttpGet]
+        [HttpGet("Mostrar Usuarios")]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
             return await _context.Usuarios.Include(u => u.Rol).ToListAsync();
         }
 
         //Get: api/usuarios/5 - Obtener un usuario por ID
-        [HttpGet("{id}")]
+        [HttpGet("Buscar por ID")]
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
             var usuario = await _context.Usuarios.Include(u => u.Rol).FirstOrDefaultAsync(u => u.Id == id);
@@ -39,7 +39,7 @@ namespace Seguridad.Controllers
         }
 
         //Post: api/usuarios - Crear un nuevo usuario
-        [HttpPost]
+        [HttpPost("Crear Usuario")]
         public async Task<ActionResult> CrearUsuario([FromBody] UsuarioCrearDTO dto)
         {
             var usuario = new Usuario
@@ -56,7 +56,7 @@ namespace Seguridad.Controllers
         }
 
         //Put: api/usuarios/5 - Editar un usuario
-        [HttpPut("{id}")]
+        [HttpPut("Editar Usuario")]
         public async Task<IActionResult> PutUsuario(int id, [FromBody] UsuarioEditarDTO dto)
         {
             var usuario = await _context.Usuarios.FindAsync(id);
@@ -73,7 +73,7 @@ namespace Seguridad.Controllers
         }
 
         //Delete: api/usuarios/5 - Eliminar un usuario
-        [HttpDelete("{id}")]
+        [HttpDelete("Eliminar Usuario")]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);

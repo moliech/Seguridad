@@ -24,7 +24,7 @@ namespace Seguridad.Controllers
         }
 
         // POST: api/auth/login - Login
-        [HttpPost("login")]
+        [HttpPost("Iniciar Sesion")]
         public async Task<IActionResult> Login([FromBody] LoginDTO login)
         {
             var usuario = await _context.Usuarios
@@ -61,7 +61,7 @@ namespace Seguridad.Controllers
         }
 
         // POST: api/auth/register - Registro de usuario
-        [HttpPost("register")]
+        [HttpPost("Registrar Usuario")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO register)
         {
             var rol = await _context.Roles.FindAsync(register.RolId);

@@ -18,14 +18,14 @@ namespace Seguridad.Controllers
         }
 
         // GET: api/roles - Obtener todos los roles
-        [HttpGet]
+        [HttpGet("Mostrar Roles")]
         public async Task<ActionResult<IEnumerable<Rol>>> GetRoles()
         {
             return await _context.Roles.ToListAsync();
         }
 
         // GET: api/roles/5 - Obtener un rol por ID
-        [HttpGet("{id}")]
+        [HttpGet("Buscar por ID")]
         public async Task<ActionResult<Rol>> GetRol(int id)
         {
             var rol = await _context.Roles.FindAsync(id);
@@ -37,7 +37,7 @@ namespace Seguridad.Controllers
         }
 
         // POST: api/roles - Crear un nuevo rol
-        [HttpPost]
+        [HttpPost("Crear Rol")]
         public async Task<ActionResult> CrearRol([FromBody] RolCrearDTO dto)
         {
             var rol = new Rol
@@ -50,7 +50,7 @@ namespace Seguridad.Controllers
         }
 
         // PUT: api/roles/5 - Editar un rol
-        [HttpPut("{id}")]
+        [HttpPut("Editar Rol")]
         public async Task<IActionResult> PutRol(int id, Rol rol)
         {
             if (id != rol.Id)
@@ -77,7 +77,7 @@ namespace Seguridad.Controllers
         }
 
         // DELETE: api/roles/5 - Eliminar un rol
-        [HttpDelete("{id}")]
+        [HttpDelete("Eliminar Rol")]
         public async Task<IActionResult> DeleteRol(int id)
         {
             var rol = await _context.Roles.FindAsync(id);
