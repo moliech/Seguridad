@@ -57,5 +57,26 @@ namespace Seguridad.Controllers
                 token = new JwtSecurityTokenHandler().WriteToken(token)
             });
         }
-    }
+
+    [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDTO register)
+        {
+            var rol = await _context.Roles.FindAsync(register.RolId);
+            if (rol == null)
+            {
+                return BadRequest("Rol no encontrado");
+            }
+            var usuario = new Usuario
+            {
+                Nombre = register.Nombre,
+                Email = register.Email,
+                Contrasena = register.Contrasena,
+                Rol = rol
+            };
+            _context.Usuarios.Add(usuario);
+            await _context.SaveChangesAsync();
+            return Ok("Usuario registrado exitosamente");
+        }
+
+    } 
 }
