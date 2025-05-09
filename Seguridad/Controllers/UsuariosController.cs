@@ -38,6 +38,16 @@ namespace Seguridad.Controllers
             return usuario;
         }
 
+        [HttpPost("Mostrar Usuarios Activos")]
+        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuariosActivos()
+        {
+            var usuarios = await _context.Usuarios
+                .Include(u => u.Rol)
+                .Where(u => u.estado.ToLower()== "activo")
+                .ToListAsync();
+            return usuarios;
+        }
+
         //Post: api/usuarios - Crear un nuevo usuario
         [HttpPost("Crear Usuario")]
         public async Task<ActionResult> CrearUsuario([FromBody] UsuarioCrearDTO dto)
@@ -59,15 +69,26 @@ namespace Seguridad.Controllers
         [HttpPut("Editar Usuario")]
         public async Task<IActionResult> PutUsuario(int id, [FromBody] UsuarioEditarDTO dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario == null)
-                return NotFound();
+                return NotFound(new { mensaje = "Usuario no encontrado" });
 
             usuario.Nombre = dto.Nombre;
             usuario.Email = dto.Email;
             usuario.RolId = dto.RolId;
+            usuario.estado = dto.estado;
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return StatusCode(500, new { mensaje = "Error al actualizar el usuario" });
+            }
 
             return NoContent();
         }

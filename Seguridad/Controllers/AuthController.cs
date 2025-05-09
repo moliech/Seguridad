@@ -35,6 +35,17 @@ namespace Seguridad.Controllers
                 return Unauthorized();
             }
 
+            //Guardar log de inicio de sesión
+            var log= new Log
+            {
+                UsuarioId = usuario.Id,
+                FechaInicio = DateTime.Now,
+            };
+
+            _context.Logs.Add(log);
+            await _context.SaveChangesAsync();
+
+
             //Crear Claims - información del usuario
             var claims = new[]
             {
@@ -79,6 +90,28 @@ namespace Seguridad.Controllers
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
             return Ok("Usuario registrado exitosamente");
+        }
+
+        [HttpPost("Validar Token")]
+        public IActionResult ValidarToken([FromBody] string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+            try
+            {
+                tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+                return Ok("Token válido");
+            }
+            catch (Exception)
+            {
+                return Unauthorized("Token inválido");
+            }
         }
 
     } 

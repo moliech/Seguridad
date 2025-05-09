@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Seguridad.Datos;
 
@@ -11,9 +12,11 @@ using Seguridad.Datos;
 namespace Seguridad.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250509000046_AgregarUsuarioidalog")]
+    partial class AgregarUsuarioidalog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,15 +33,13 @@ namespace Seguridad.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("FechaInicio")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("Fecha")
+                        .HasColumnType("date");
 
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Logs");
                 });
@@ -92,17 +93,6 @@ namespace Seguridad.Migrations
                     b.HasIndex("RolId");
 
                     b.ToTable("Usuarios");
-                });
-
-            modelBuilder.Entity("Seguridad.Models.Log", b =>
-                {
-                    b.HasOne("Seguridad.Models.Usuario", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("Seguridad.Models.Usuario", b =>
