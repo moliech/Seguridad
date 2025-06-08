@@ -6,7 +6,6 @@ namespace Seguridad.Models.Dtos
 {
     public class RolCrearDTO
     {
-        [Required(ErrorMessage = "El Nombre es requerido")]
         public string Nombre { get; set; }
     }
 }

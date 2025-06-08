@@ -15,5 +15,7 @@ namespace Seguridad.Models.Dtos
         public string Contrasena { get; set; }
         [Required(ErrorMessage = "El Rol es requerido")]
         public int RolId { get; set; }
+
+        public string estado { get; set; }
     }
 }

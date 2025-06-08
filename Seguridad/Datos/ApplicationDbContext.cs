@@ -12,5 +12,7 @@ namespace Seguridad.Datos
 
         public DbSet<Rol> Roles { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+
+        public DbSet<Log> Logs { get; set; }
     }
 }

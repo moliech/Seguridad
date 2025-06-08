@@ -19,8 +19,12 @@ namespace Seguridad.Models
         [Required(ErrorMessage = "La Contraseña es requerida")]
         public string Contrasena { get; set; }
 
+        public string estado { get; set; }
+
         [ForeignKey("Rol")]
         public int RolId { get; set; }
         public Rol Rol { get; set; }
+
+        
     }
 }
