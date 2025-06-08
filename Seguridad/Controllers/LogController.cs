@@ -18,7 +18,7 @@ namespace Seguridad.Controllers
             _context = context;
         }
 
-        [HttpGet("Mostrar Logs")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<LogDto>>> GetLogs()
         {
             var logs=await _context.Logs

@@ -6,6 +6,19 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+// Configuración de CORS para permitir solicitudes desde el frontend de Angular
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: myAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:4200") // Permite tu frontend de Angular
+                                .AllowAnyHeader() // Permite cualquier cabecera (como Authorization)
+                                .AllowAnyMethod(); // Permite cualquier método (GET, POST, PUT, etc.)
+                      });
+});
 
 //Autenticación JWT 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -43,6 +56,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(myAllowSpecificOrigins);
 
 app.UseAuthentication();
 

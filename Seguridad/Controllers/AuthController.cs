@@ -24,15 +24,17 @@ namespace Seguridad.Controllers
         }
 
         // POST: api/auth/login - Login
-        [HttpPost("Iniciar Sesion")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO login)
         {
             var usuario = await _context.Usuarios
                 .Include(u => u.Rol)
-                .FirstOrDefaultAsync(u => u.Email == login.Email && u.Contrasena == login.Contrasena);
-            if (usuario == null)
+                .FirstOrDefaultAsync(u => u.Email == login.Email);
+            // 1. Validar si el usuario existe Y si la contraseña coincide (usando un hasher)
+            // Ejemplo conceptual: if (usuario == null || !PasswordHasher.Verify(login.Contrasena, usuario.ContrasenaHash))
+            if (usuario == null || usuario.Contrasena != login.Contrasena) // <-- Manteniendo tu lógica actual por ahora
             {
-                return Unauthorized();
+                return Unauthorized(new { message = "Credenciales inválidas" });
             }
 
             //Guardar log de inicio de sesión
@@ -67,12 +69,18 @@ namespace Seguridad.Controllers
 
             return Ok(new
             {
-                token = new JwtSecurityTokenHandler().WriteToken(token)
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                usuario = new
+                {
+                    nombre = usuario.Nombre,
+                    email = usuario.Email,
+                    rol = usuario.Rol.Nombre
+                }
             });
         }
 
         // POST: api/auth/register - Registro de usuario
-        [HttpPost("Registrar Usuario")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO register)
         {
             var rol = await _context.Roles.FindAsync(register.RolId);
@@ -92,7 +100,7 @@ namespace Seguridad.Controllers
             return Ok("Usuario registrado exitosamente");
         }
 
-        [HttpPost("Validar Token")]
+        [HttpPost("validate")]
         public IActionResult ValidarToken([FromBody] string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

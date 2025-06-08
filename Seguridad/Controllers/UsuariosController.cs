@@ -20,14 +20,14 @@ namespace Seguridad.Controllers
         }
 
         //Get: api/usuarios - Obtener todos los usuarios
-        [HttpGet("Mostrar Usuarios")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
             return await _context.Usuarios.Include(u => u.Rol).ToListAsync();
         }
 
         //Get: api/usuarios/5 - Obtener un usuario por ID
-        [HttpGet("Buscar por ID")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
             var usuario = await _context.Usuarios.Include(u => u.Rol).FirstOrDefaultAsync(u => u.Id == id);
@@ -38,7 +38,7 @@ namespace Seguridad.Controllers
             return usuario;
         }
 
-        [HttpPost("Mostrar Usuarios Activos")]
+        [HttpPost("activos")]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuariosActivos()
         {
             var usuarios = await _context.Usuarios
@@ -49,24 +49,35 @@ namespace Seguridad.Controllers
         }
 
         //Post: api/usuarios - Crear un nuevo usuario
-        [HttpPost("Crear Usuario")]
+        [HttpPost] // (Recomendación: quitar el string "Crear Usuario" si ya lo hiciste)
         public async Task<ActionResult> CrearUsuario([FromBody] UsuarioCrearDTO dto)
         {
+            // Opcional: Verificar si el email ya existe para dar un error más claro
+            if (await _context.Usuarios.AnyAsync(u => u.Email == dto.Email))
+            {
+                return Conflict(new { message = "El email ya está registrado." });
+            }
+
             var usuario = new Usuario
             {
                 Nombre = dto.Nombre,
                 Email = dto.Email,
-                Contrasena = dto.Contrasena,
-                RolId = dto.RolId
+                Contrasena = dto.Contrasena, // <-- Recuerda que esto debe ser un hash
+                RolId = dto.RolId,
+
+                // --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
+                // Asignamos un estado por defecto al crear el usuario.
+                estado = "activo"
             };
 
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
-            return Ok(usuario);
+
+            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuario);
         }
 
         //Put: api/usuarios/5 - Editar un usuario
-        [HttpPut("Editar Usuario")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> PutUsuario(int id, [FromBody] UsuarioEditarDTO dto)
         {
             if (!ModelState.IsValid)
@@ -94,7 +105,7 @@ namespace Seguridad.Controllers
         }
 
         //Delete: api/usuarios/5 - Eliminar un usuario
-        [HttpDelete("Eliminar Usuario")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);
